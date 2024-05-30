@@ -3,6 +3,7 @@ import { TaskComponent } from "./task/task.component";
 import { Task } from "./task/task.model";
 import { NewTaskComponent } from "./new-task/new-task.component";
 import { type NewTaskDate } from "./new-task/new-task.module";
+import { TasksService } from "./tasks.service";
 
 @Component({
     selector: "app-tasks",
@@ -16,53 +17,26 @@ export class TasksComponent {
   @Input({ required: true }) name!: string;
   isAddingTask = false;
 
-  tasks = [
-    {
-      id: "t1",
-      userId: 'u1',
-      title: "Master Angular",
-      summary: "Learn all the basic and advanced concepts of Angular",
-      dueDate: '2025-12-31'
-    },
-    {
-      id: "t2",
-      userId: 'u3',
-      title: "Master React",
-      summary: "Learn all the basic and advanced concepts of React",
-      dueDate: '2025-12-31'
-    },
-    {
-      id: "t3",
-      userId: 'u3',
-      title: "Master Vue",
-      summary: "Learn all the basic and advanced concepts of Vue",
-      dueDate: '2025-12-31'
-    },
 
-  ];
+  constructor(private tasksService: TasksService) {}
+
+
   get selectedUserTasks() {
-    return this.tasks.filter((task) => task.userId === this.userId);
+    return this.tasksService.getUserTasks(this.userId);
   }
   onCompleteTask(taskId: string) {
-    this.tasks = this.tasks.filter((task) => task.id !== taskId);
+    this.tasksService.removeTask(taskId);
 
   }
 
   onStartAddTask() {
     this.isAddingTask = true;
   }
-  onCancelAddTask() {
+  onCloseAddTask() {
     this.isAddingTask = false;
   }
   onAddTask(taskData: NewTaskDate) {
-    //this.tasks.push({
-      this.tasks.unshift({
-      id: Math.random().toString(),
-      userId: this.userId,
-      title: taskData.title,
-      summary: taskData.summary,
-      dueDate: taskData.date
-    });
+    this.tasksService.addTask(taskData, this.userId);
     this.isAddingTask = false;
   }
 }
